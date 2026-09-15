@@ -1,0 +1,83 @@
+/* StreamHub Custom Cinematic Styles */
+
+:root {
+  --brand-red: #e50914;
+  --brand-gold: #f5c518;
+  --brand-dark: #08090c;
+  --brand-card: #12151e;
+  --brand-border: #1f2433;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #08090c;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f2433;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e50914;
+}
+
+/* Movie Card Hover Dynamics */
+.movie-card {
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.movie-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 32px -8px rgba(229, 9, 20, 0.25);
+}
+
+.movie-card .play-overlay {
+  opacity: 0;
+  transition: opacity 0.25s ease-in-out;
+}
+
+.movie-card:hover .play-overlay {
+  opacity: 1;
+}
+
+/* Smooth Focus Rings */
+input:focus, button:focus {
+  outline: none;
+}
+
+/* Line clamps */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Glowing text and buttons */
+.glow-red {
+  text-shadow: 0 0 12px rgba(229, 9, 20, 0.6);
+}
+
+.glow-box {
+  box-shadow: 0 0 20px rgba(229, 9, 20, 0.35);
+}

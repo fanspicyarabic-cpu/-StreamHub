@@ -1,0 +1,33 @@
+{
+  "name": "streamhub",
+  "version": "1.0.0",
+  "description": "StreamHub - High-performance cinematic foreign movies streaming platform with Adsterra monetization and Firestore integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "scrape": "node fullScraper.js",
+    "scrape:arabic": "node scrapeArabicSub.js"
+  },
+  "keywords": [
+    "streamhub",
+    "movies",
+    "streaming",
+    "adsterra",
+    "firebase",
+    "firestore",
+    "crawler",
+    "scraper"
+  ],
+  "author": "StreamHub Team",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "firebase-admin": "^12.7.0",
+    "playwright": "^1.63.0"
+  }
+}
