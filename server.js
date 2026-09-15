@@ -145,7 +145,7 @@ app.get('/api/genres', (req, res) => {
  */
 app.get('/api/ad-config', (req, res) => {
   res.json({
-    directLink: process.env.ADSTERRA_DIRECT_LINK || 'https://www.highperformancegate.com/your-adsterra-direct-link-id',
+    directLink: process.env.ADSTERRA_DIRECT_LINK || 'https://watchingprefecture.com/f2gsd90e42?key=ecbf0487525e0567b68966ab79b16399',
     popunderEnabled: true,
     socialBarEnabled: true
   });

@@ -5,8 +5,8 @@
  */
 
 const AdManager = {
-  // Default fallback direct link (replaced automatically via API or your Adsterra dashboard)
-  directLinkUrl: 'https://www.highperformancegate.com/your-adsterra-direct-link-id',
+  // Default fallback direct link (Adsterra High CPM Smartlink)
+  directLinkUrl: 'https://watchingprefecture.com/f2gsd90e42?key=ecbf0487525e0567b68966ab79b16399',
 
   async init() {
     try {
