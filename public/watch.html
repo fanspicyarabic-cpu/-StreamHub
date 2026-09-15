@@ -106,7 +106,7 @@
     <!-- ========================================================================= -->
     <div class="w-full overflow-hidden rounded-xl border border-brand-border/40 bg-[#12151e]/60 p-2 text-center shadow-lg flex flex-col items-center justify-center">
       <div class="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-1">Sponsored Stream Ads</div>
-      <div class="flex items-center justify-center min-h-[90px] w-full max-w-[728px] overflow-hidden">
+      <div id="adsterra-banner-728x90" class="flex items-center justify-center min-h-[90px] w-full max-w-[728px] overflow-hidden">
         <script>
           atOptions = {
             'key' : '3f236d9a73ab7a628ff21d8aaf68195d',
@@ -182,7 +182,7 @@
           <!-- ========================================================================= -->
           <!-- 📌 ADSTERRA AD PLACEMENT: BANNER 300x250 (Below Watch Button)             -->
           <!-- ========================================================================= -->
-          <div class="w-full flex flex-col items-center justify-center pt-2">
+          <div id="adsterra-player-bottom-banner" class="w-full flex flex-col items-center justify-center pt-2 min-h-[250px]">
             <script>
               atOptions = {
                 'key' : 'ac3b3e5e7a74ebe64f50435162f35a19',
@@ -287,7 +287,7 @@
         <!-- ===================================================================== -->
         <div class="rounded-xl border border-brand-border/80 bg-[#12151e] p-4 text-center shadow-xl">
           <div class="text-[10px] text-gray-500 uppercase tracking-widest font-mono mb-2">Advertisement (300x250)</div>
-          <div class="min-h-[250px] bg-[#090b10] rounded-lg flex flex-col items-center justify-center p-2">
+          <div id="adsterra-banner-300x250" class="min-h-[250px] bg-[#090b10] rounded-lg flex flex-col items-center justify-center p-2">
             <script>
               atOptions = {
                 'key' : 'ac3b3e5e7a74ebe64f50435162f35a19',
@@ -395,6 +395,11 @@
         span.textContent = g;
         genresContainer.appendChild(span);
       });
+
+      // Refresh and isolate dynamic Adsterra banners
+      if (window.AdManager && window.AdManager.renderDynamicBanners) {
+        window.AdManager.renderDynamicBanners();
+      }
     }
 
     /**

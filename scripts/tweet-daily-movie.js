@@ -1,7 +1,8 @@
 const { TwitterApi } = require('twitter-api-v2');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
-const { getMovies, getLocalMovies } = require('../db');
+const fs = require('fs');
+const axios = require('axios');
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 // Twitter API Credentials
 const TWITTER_API_KEY = process.env.TWITTER_API_KEY || "fhGoRryd6hINE3aqW0EFauABg";
@@ -9,32 +10,57 @@ const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET || "6cnRTsA2BygzQVA512
 const TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN || "2099777594702929920-1xDXMaInKrcQLqABq55kK46vLEWiB6";
 const TWITTER_ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET || "pTKSj521ZgpYqUiCDc85MmoHNUpQhg8VN4C1TnY4DY1FW";
 
+/**
+ * Robust Multi-tier Movie Fetcher:
+ * 1. Try Live Production API
+ * 2. Try Firestore DB module
+ * 3. Try Local data/movies.json
+ */
 async function getRandomMovie() {
+  // Tier 1: Fetch from live production API
   try {
-    // Attempt to fetch from Firestore / DB helper
-    const result = await getMovies({ page: 1, limit: 100 });
-    let movieList = (result && result.movies && result.movies.length > 0) ? result.movies : [];
-
-    // Fallback to local movies cache
-    if (movieList.length === 0) {
-      movieList = getLocalMovies();
+    const apiRes = await axios.get('https://streamhub-rosy.vercel.app/api/movies?limit=100', { timeout: 8000 });
+    if (apiRes.data && apiRes.data.movies && apiRes.data.movies.length > 0) {
+      const list = apiRes.data.movies;
+      console.log(`[Twitter Bot] Fetched ${list.length} movies from live API.`);
+      return list[Math.floor(Math.random() * list.length)];
     }
-
-    if (!movieList || movieList.length === 0) {
-      throw new Error('No movies found in database or local cache.');
-    }
-
-    const randomIndex = Math.floor(Math.random() * movieList.length);
-    return movieList[randomIndex];
-  } catch (error) {
-    console.error('[Twitter Bot] Error fetching movie from DB:', error.message);
-    // Fallback to local files
-    const local = getLocalMovies();
-    if (local && local.length > 0) {
-      return local[Math.floor(Math.random() * local.length)];
-    }
-    throw error;
+  } catch (err) {
+    console.warn('[Twitter Bot] Live API fetch skipped or unreachable:', err.message);
   }
+
+  // Tier 2: Fetch via internal db.js
+  try {
+    const { getMovies } = require('../db');
+    const result = await getMovies({ page: 1, limit: 100 });
+    if (result && result.movies && result.movies.length > 0) {
+      console.log(`[Twitter Bot] Fetched ${result.movies.length} movies via DB module.`);
+      return result.movies[Math.floor(Math.random() * result.movies.length)];
+    }
+  } catch (err) {
+    console.warn('[Twitter Bot] DB module fetch error:', err.message);
+  }
+
+  // Tier 3: Fetch directly from local JSON cache file
+  try {
+    const localPath = path.resolve(__dirname, '..', 'data', 'movies.json');
+    if (fs.existsSync(localPath)) {
+      const raw = fs.readFileSync(localPath, 'utf8');
+      const list = JSON.parse(raw);
+      if (Array.isArray(list) && list.length > 0) {
+        console.log(`[Twitter Bot] Fetched from local JSON cache (${list.length} movies).`);
+        return list[Math.floor(Math.random() * list.length)];
+      }
+    }
+  } catch (err) {
+    console.error('[Twitter Bot] Local JSON cache read error:', err.message);
+  }
+
+  // Fallback default placeholder if database is empty
+  return {
+    id: 'trending',
+    title: 'أقوى الأفلام الأجنبية الحصرية بجودة فائقة'
+  };
 }
 
 async function tweetDailyMovie() {
@@ -43,12 +69,12 @@ async function tweetDailyMovie() {
   console.log('====================================================');
 
   try {
-    // 1. Pick a random movie
+    // 1. Pick a movie
     const movie = await getRandomMovie();
-    console.log(`[Twitter Bot] Selected Movie: "${movie.title}" (ID: ${movie.id})`);
+    console.log(`[Twitter Bot] Target Movie: "${movie.title}" (ID: ${movie.id})`);
 
     // 2. Format Tweet Text
-    const movieTitle = movie.title || 'فيلم مميز';
+    const movieTitle = movie.title || 'أحدث الأفلام';
     const movieUrl = `https://streamhub-rosy.vercel.app/movie/${movie.id}`;
     
     const tweetText = `🎬 ${movieTitle}
@@ -78,10 +104,21 @@ async function tweetDailyMovie() {
     console.log('====================================================');
     return response;
   } catch (error) {
-    console.error('❌ Failed to publish tweet:', error);
-    if (error.data) {
-      console.error('Twitter API Details:', JSON.stringify(error.data, null, 2));
+    console.error('\n❌ Twitter API Error Details:');
+    if (error.code === 401 || (error.data && error.data.status === 401)) {
+      console.error('⚠️ [401 Unauthorized]: The Twitter App needs "Read and Write" permissions.');
+      console.error('👉 Fix: Go to developer.x.com -> User Authentication Settings -> Set permissions to "Read and Write" -> Regenerate Access Token & Secret.');
+    } else if (error.code === 403 || (error.data && error.data.status === 403)) {
+      console.error('⚠️ [403 Forbidden]: Duplicate tweet or API limit reached.');
+    } else {
+      console.error(error.message || error);
     }
+
+    if (error.data) {
+      console.error('Raw Response:', JSON.stringify(error.data, null, 2));
+    }
+
+    // Exit with code 1 for CI tracking
     process.exit(1);
   }
 }
