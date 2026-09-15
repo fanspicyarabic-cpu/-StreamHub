@@ -139,6 +139,48 @@
           <div class="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full animate-spin"></div>
           <p class="text-sm font-semibold text-gray-300">Connecting to High-Speed Video Stream...</p>
         </div>
+
+        <!-- CSP Frame Restriction Notice Overlay -->
+        <div id="cspNoticeOverlay" class="absolute inset-0 bg-[#08090c]/95 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center space-y-4 z-20 hidden">
+          <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-red to-amber-500 flex items-center justify-center text-white text-2xl shadow-xl shadow-brand-red/40 animate-pulse">
+            <i class="fa-solid fa-play"></i>
+          </div>
+          <div class="max-w-md space-y-2">
+            <h3 class="text-base font-bold text-white">السيرفر محمي ويتطلب التشغيل الخارجي المباشر</h3>
+            <p class="text-xs text-gray-300 leading-relaxed">
+              هذا السيرفر يمنع العرض المضمن (CSP frame-ancestors). اضغط أدناه لفتح المشغل المباشر الأصلي بجودة فائقة في نافذة جديدة.
+            </p>
+          </div>
+          <button onclick="handleExternalServerClick(event)" class="px-7 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-brand-red hover:from-amber-400 hover:to-red-600 text-white font-bold text-xs tracking-wider shadow-xl shadow-brand-red/40 transform hover:scale-105 transition-all flex items-center gap-2">
+            <i class="fa-solid fa-up-right-from-square"></i>
+            <span>فتح السيرفر المباشر الآن / Open Server</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Prominent External Server + Adsterra Monetization Action Banner -->
+      <div id="externalServerBanner" class="p-3.5 sm:p-4 rounded-xl bg-gradient-to-r from-amber-950/40 via-[#161a25] to-[#12151e] border border-brand-gold/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl">
+        <div class="flex items-center gap-3.5 text-center sm:text-left">
+          <div class="w-11 h-11 rounded-xl bg-gradient-to-tr from-amber-500 to-brand-red text-white flex items-center justify-center shrink-0 text-xl shadow-lg shadow-brand-red/30">
+            <i class="fa-solid fa-bolt animate-pulse"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2 justify-center sm:justify-start flex-wrap">
+              <h4 class="text-sm sm:text-base font-extrabold text-white">تشغيل عبر سيرفر خارجي / Open Server</h4>
+              <span class="px-2 py-0.5 rounded text-[10px] font-black bg-brand-red text-white uppercase tracking-wider">VIP 4K</span>
+            </div>
+            <p class="text-xs text-gray-300 mt-0.5">مشاهدة مباشرة بدون حظر أو تقطيع بدقة 1080p وترجمة عربية كاملة</p>
+          </div>
+        </div>
+
+        <button 
+          id="openExternalServerBtn" 
+          onclick="handleExternalServerClick(event)" 
+          class="w-full sm:w-auto px-6 py-3 rounded-xl font-bold text-xs sm:text-sm uppercase tracking-wider text-white bg-gradient-to-r from-amber-500 via-brand-red to-red-700 hover:brightness-110 shadow-xl shadow-brand-red/30 transform hover:-translate-y-0.5 transition-all duration-300 flex items-center justify-center gap-2.5 shrink-0"
+        >
+          <i class="fa-solid fa-play text-xs"></i>
+          <span>تشغيل عبر سيرفر خارجي / Open Server</span>
+        </button>
       </div>
 
       <!-- Server Switcher Bar & Adsterra Direct Link CTAs -->
@@ -156,6 +198,9 @@
           </button>
           <button id="serverBtn3" onclick="switchServer(3)" class="px-3 py-1.5 rounded-lg bg-[#1f2433] hover:bg-[#2a3044] text-gray-300 font-semibold border border-brand-border transition-all">
             Server 3 (2Embed)
+          </button>
+          <button id="serverBtnExternal" onclick="handleExternalServerClick(event)" class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-600 to-brand-red text-white font-bold transition-all shadow hover:brightness-110 flex items-center gap-1">
+            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> Server 4 (External HD)
           </button>
         </div>
 
@@ -329,12 +374,36 @@
       switchServer(1);
     }
 
+    /**
+     * Handle External Server click:
+     * 1. Opens the movie server in a new tab
+     * 2. Opens Adsterra Direct Link simultaneously to maximize earnings
+     */
+    function handleExternalServerClick(e) {
+      if (e) e.preventDefault();
+      if (!currentMovie) return;
+
+      const targetServerUrl = currentMovie.sourceUrl || currentMovie.embedUrl || `https://www.shahedpro.com/movies/`;
+      const directAdUrl = (window.AdManager && window.AdManager.directLinkUrl) || 'https://www.highperformancegate.com/your-adsterra-direct-link-id';
+
+      // Open Movie Server in new window/tab
+      window.open(targetServerUrl, '_blank', 'noopener,noreferrer');
+
+      // Simultaneously open Adsterra Direct Link in background/tab
+      setTimeout(() => {
+        window.open(directAdUrl, '_blank', 'noopener,noreferrer');
+      }, 150);
+    }
+
     function switchServer(serverNum) {
       if (!currentMovie) return;
       currentServer = serverNum;
 
       const iframe = document.getElementById('videoPlayerFrame');
       const loader = document.getElementById('playerLoading');
+      const cspOverlay = document.getElementById('cspNoticeOverlay');
+      
+      if (cspOverlay) cspOverlay.classList.add('hidden');
       loader.classList.remove('hidden');
 
       // Update button highlights
@@ -349,15 +418,27 @@
         }
       });
 
-      let src = '';
-      const tmdbId = currentMovie.tmdbId || currentMovie.id;
+      const tmdbOrImdb = currentMovie.imdbId || currentMovie.tmdbId || currentMovie.id;
+      const isShahedPro = currentMovie.embedUrl && currentMovie.embedUrl.includes('shahedpro.com');
 
+      // If Server 1 is selected on a ShahedPro movie without an open iframe embed
+      if (serverNum === 1 && isShahedPro && !currentMovie.imdbId) {
+        loader.classList.add('hidden');
+        if (cspOverlay) cspOverlay.classList.remove('hidden');
+        return;
+      }
+
+      let src = '';
       if (serverNum === 1) {
-        src = currentMovie.embedUrl || `https://vidsrc.to/embed/movie/${tmdbId}`;
+        if (currentMovie.imdbId) {
+          src = `https://vidsrc.to/embed/movie/${currentMovie.imdbId}`;
+        } else {
+          src = currentMovie.embedUrl || `https://vidsrc.to/embed/movie/${tmdbOrImdb}`;
+        }
       } else if (serverNum === 2) {
-        src = `https://superembed.stream/embed/movie/${tmdbId}`;
+        src = `https://superembed.stream/embed/movie/${tmdbOrImdb}`;
       } else {
-        src = `https://www.2embed.cc/embed/${tmdbId}`;
+        src = `https://www.2embed.cc/embed/${tmdbOrImdb}`;
       }
 
       iframe.src = src;
