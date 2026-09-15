@@ -21,7 +21,7 @@ const watchTemplatePath = path.join(__dirname, 'public', 'watch.html');
 /**
  * Dynamic SSR Route for Watch Page with Open Graph & Twitter Cards for X sharing
  */
-app.get('/watch/:id', async (req, res) => {
+app.get(['/watch/:id', '/movie/:id'], async (req, res) => {
   try {
     const movieId = req.params.id;
     const movie = await getMovieById(movieId);

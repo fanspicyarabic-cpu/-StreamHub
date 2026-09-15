@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "node server.js",
     "scrape": "node fullScraper.js",
-    "scrape:arabic": "node scrapeArabicSub.js"
+    "scrape:arabic": "node scrapeArabicSub.js",
+    "tweet:daily": "node scripts/tweet-daily-movie.js"
   },
   "keywords": [
     "streamhub",
@@ -28,6 +29,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "firebase-admin": "^12.7.0",
-    "playwright": "^1.63.0"
+    "playwright": "^1.63.0",
+    "twitter-api-v2": "^1.29.1"
   }
 }
