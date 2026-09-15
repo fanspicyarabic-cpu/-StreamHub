@@ -5,12 +5,12 @@ const axios = require('axios');
 require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
 // Twitter API Credentials (Loaded from environment / GitHub Secrets)
-const TWITTER_API_KEY = process.env.TWITTER_API_KEY;
-const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET;
-const TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN;
-const TWITTER_ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET;
-const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID;
-const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET;
+const TWITTER_API_KEY = process.env.TWITTER_API_KEY || "fhGoRryd6hINE3aqW0EFauABg";
+const TWITTER_API_SECRET = process.env.TWITTER_API_SECRET || "6cnRTsA2BygzQVA512rwR2vqgZF44SQjyDHRcjqhdaVN2YXLgd";
+const TWITTER_ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN || "2099777594702929920-1xDXMaInKrcQLqABq55kK46vLEWiB6";
+const TWITTER_ACCESS_TOKEN_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET || "pTKSj521ZgpYqUiCDc85MmoHNUpQhg8VN4C1TnY4DY1FW";
+const TWITTER_CLIENT_ID = process.env.TWITTER_CLIENT_ID || "Ny1WWDIzY3Y0NE14TTNneFd1OHQ6MTpjaQ";
+const TWITTER_CLIENT_SECRET = process.env.TWITTER_CLIENT_SECRET || "WWAdTukDpv9770axh2cYjR126VCN3FEWEfoNTHKDSHVVHn_HnB";
 
 /**
  * Robust Multi-tier Movie Fetcher:
