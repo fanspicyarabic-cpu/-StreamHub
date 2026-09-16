@@ -25,10 +25,10 @@ jobs:
 
       - name: Post Daily Movie Tweet to X
         env:
-          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY || 'N16873SmczkC7cyMShhShfVKt' }}
-          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET || '5IkaImBgb9fNrYENOG4yoMgG4XDSDVG3Q9TydNFFxLQ7SA2byi' }}
-          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN || '2099777594702929920-mDPhbxR1VyKKcQ6ql5HgXyeBaWJ67P' }}
-          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET || 'AGyioxJIrk0a66mAjrxlKkaKyu7kpP3a8YhxWTC2KdwSS' }}
+          TWITTER_API_KEY: ${{ secrets.TWITTER_API_KEY || 'fPWfaIe7Jyp9cUpnPaH1cVQB8' }}
+          TWITTER_API_SECRET: ${{ secrets.TWITTER_API_SECRET || 'YzTl32oFIgwBQhoDfvMqiEdDjVcr4y4iKC4blbhxomiEXOm1HW' }}
+          TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN || '2099777594702929920-AUFyMcdLyXJyCltgOz4SLE8hXRPejE' }}
+          TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET || 'd3Q83GbaTbf3iT4kIQaEQLU0uiYK3FK76xrzh4z0lwqKI' }}
           TWITTER_CLIENT_ID: ${{ secrets.TWITTER_CLIENT_ID || 'Ny1WWDIzY3Y0NE14TTNneFd1OHQ6MTpjaQ' }}
           TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET || 'WWAdTukDpv9770axh2cYjR126VCN3FEWEfoNTHKDSHVVHn_HnB' }}
         run: node scripts/tweet-daily-movie.js

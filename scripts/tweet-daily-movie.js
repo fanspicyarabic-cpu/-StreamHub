@@ -89,17 +89,24 @@ async function tweetDailyMovie() {
     console.log(tweetText);
     console.log('---------------------\n');
 
-    // 3. Initialize Twitter Client
-    if (!TWITTER_API_KEY || !TWITTER_ACCESS_TOKEN) {
-      throw new Error('Missing Twitter API credentials. Please ensure TWITTER_API_KEY, TWITTER_API_SECRET, TWITTER_ACCESS_TOKEN, and TWITTER_ACCESS_TOKEN_SECRET are defined in GitHub Secrets or .env');
+    // 3. Initialize Twitter Client (Support OAuth 2.0 User Token & OAuth 1.0a)
+    const oauth2Token = process.env.TWITTER_OAUTH2_ACCESS_TOKEN || (TWITTER_ACCESS_TOKEN && TWITTER_ACCESS_TOKEN.includes(':') ? TWITTER_ACCESS_TOKEN : null);
+    
+    let client;
+    if (oauth2Token) {
+      console.log('[Twitter Bot] Authenticating via OAuth 2.0 User Access Token...');
+      client = new TwitterApi(oauth2Token);
+    } else if (TWITTER_API_KEY && TWITTER_ACCESS_TOKEN) {
+      console.log('[Twitter Bot] Authenticating via OAuth 1.0a User Context...');
+      client = new TwitterApi({
+        appKey: TWITTER_API_KEY,
+        appSecret: TWITTER_API_SECRET,
+        accessToken: TWITTER_ACCESS_TOKEN,
+        accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
+      });
+    } else {
+      throw new Error('Missing Twitter API credentials. Please ensure Twitter tokens are defined in GitHub Secrets or .env');
     }
-
-    const client = new TwitterApi({
-      appKey: TWITTER_API_KEY,
-      appSecret: TWITTER_API_SECRET,
-      accessToken: TWITTER_ACCESS_TOKEN,
-      accessSecret: TWITTER_ACCESS_TOKEN_SECRET,
-    });
 
     // 4. Post Tweet via Twitter API v2
     const response = await client.v2.tweet(tweetText);
